@@ -1,8 +1,6 @@
 package com.metasol.services;
 
-import com.metasol.dto.request.CategoryRequestDto;
 import com.metasol.dto.request.PriceRequestDto;
-import com.metasol.dto.response.CategoryResponseDto;
 import com.metasol.dto.response.PriceResponseDto;
 
 import java.util.List;

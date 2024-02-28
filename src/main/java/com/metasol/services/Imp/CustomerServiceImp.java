@@ -3,7 +3,6 @@ package com.metasol.services.Imp;
 import com.metasol.constant.ErrorCode;
 import com.metasol.constant.MessageCode;
 import com.metasol.dto.request.CustomerRequestDto;
-import com.metasol.dto.request.search.CustomerSearchDto;
 import com.metasol.dto.response.CustomerResponseDto;
 import com.metasol.entity.CustomerEntity;
 import com.metasol.exception.EOException;
@@ -37,8 +36,8 @@ public class CustomerServiceImp implements ICustomerService {
     @Override
     public CustomerResponseDto create(CustomerRequestDto requestDto) {
         String phoneNumber = requestDto.getPhoneNumber();
-        if (customerRepo.existsByPhoneNumber(phoneNumber)){
-            throw  new DataIntegrityViolationException("PHone number already exists");
+        if (customerRepo.existsByPhoneNumber(phoneNumber)) {
+            throw new DataIntegrityViolationException("PHone number already exists");
         }
 
         CustomerEntity entity = new CustomerEntity();
@@ -92,7 +91,11 @@ public class CustomerServiceImp implements ICustomerService {
         return responseDtoList;
     }
 
-
+    /**
+     * @param entity
+     * @param dto    :
+     *               Set value từ dto -> entity
+     */
     private void value(CustomerEntity entity, CustomerRequestDto dto) {
         entity.setName(dto.getName());
         entity.setPhoneNumber(dto.getPhoneNumber());
@@ -100,8 +103,13 @@ public class CustomerServiceImp implements ICustomerService {
         entity.setType(dto.getTypeId());
     }
 
+    /**
+     * @param entity
+     * @return : trả ra dto
+     * Thực hiện chuyển đổi dữ liệu từ CustomerEntity sang CustomerResponseDto
+     */
     private CustomerResponseDto convertToResponseDto(CustomerEntity entity) {
-        // Thực hiện chuyển đổi dữ liệu từ CustomerEntity sang CustomerResponseDto
+
         CustomerResponseDto dto = new CustomerResponseDto();
         dto.setName(entity.getName());
         dto.setPhoneNumber(entity.getPhoneNumber());

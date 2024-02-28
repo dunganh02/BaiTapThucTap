@@ -1,7 +1,6 @@
 package com.metasol.services;
 
 import com.metasol.dto.request.CustomerRequestDto;
-import com.metasol.dto.request.search.CustomerSearchDto;
 import com.metasol.dto.response.CustomerResponseDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;

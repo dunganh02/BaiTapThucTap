@@ -20,3 +20,4 @@ spring:
       max-request-size: 10MB
 api:
   prefix: /api/v1
+

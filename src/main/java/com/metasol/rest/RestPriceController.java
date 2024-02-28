@@ -3,9 +3,9 @@ package com.metasol.rest;
 import com.metasol.dto.request.PriceRequestDto;
 import com.metasol.dto.response.PriceResponseDto;
 import com.metasol.services.Imp.PriceServiceImp;
+import com.metasol.utils.EOResponse;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,34 +17,34 @@ import java.util.List;
 public class RestPriceController {
     private final PriceServiceImp priceService;
     @PostMapping("")
-    ResponseEntity<?> create(@Valid @RequestBody PriceRequestDto dto,
-                                     BindingResult result) {
+    EOResponse<?> create(@Valid @RequestBody PriceRequestDto dto,
+                         BindingResult result) {
         PriceResponseDto price = priceService.createPrice(dto);
-        return ResponseEntity.ok().body(price);
+        return EOResponse.build(price);
     }
 
     @GetMapping("/get-all")
-    ResponseEntity<List<?>> getAll() {
+    EOResponse<List<?>> getAll() {
         List<PriceResponseDto> listPrice = priceService.getAllPrice();
-        return ResponseEntity.ok().body(listPrice);
+        return EOResponse.build(listPrice);
     }
 
 
     @PutMapping("/{id}")
-    ResponseEntity<PriceResponseDto> updateCategory(@PathVariable(value = "id") Long id,
+    EOResponse<PriceResponseDto> updateCategory(@PathVariable(value = "id") Long id,
                                                        @RequestBody PriceRequestDto request) {
         PriceResponseDto responseDto = priceService.updatePrice(id, request);
-        return ResponseEntity.ok().body(responseDto);
+        return EOResponse.build(responseDto);
     }
 
     @DeleteMapping("/{id}")
-    ResponseEntity<String> deleteCategory(@PathVariable(value = "id") Long id) {
+    EOResponse<String> deleteCategory(@PathVariable(value = "id") Long id) {
         try {
             priceService.deletePrice(id);
-            return ResponseEntity.ok().body("Xóa thành công id" + id);
+            return EOResponse.build("Xóa thành công id" + id);
 
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return EOResponse.build(e.getMessage());
         }
 
     }

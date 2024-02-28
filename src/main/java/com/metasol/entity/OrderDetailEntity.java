@@ -21,14 +21,15 @@ public class OrderDetailEntity {
     private int numberOfProduct;
 
     @Column
-    private float price;
-
-    @ManyToOne
-    @JoinColumn(name = "order_id")
-    private OrderEntity order;
+    private double price;
 
     @ManyToOne
     @JoinColumn(name = "product_id")
     private ProductEntity product;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_id")
+    private OrderEntity order;
+
 
 }

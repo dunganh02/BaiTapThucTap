@@ -41,7 +41,6 @@ public class PriceServiceImp implements IPriceService {
         for (PriceEntity entity : entities) {
             PriceResponseDto responseDto = responseMapper.entityToResponse(entity);
             responseDtoList.add(responseDto);
-
         }
         return responseDtoList;
     }
@@ -60,14 +59,12 @@ public class PriceServiceImp implements IPriceService {
     @Override
     public void deletePrice(long id) {
         priceRepo.deleteById(id);
-
     }
 
     private void value(PriceEntity entity, PriceRequestDto dto) {
         entity.setType(dto.getType());
         entity.setProduct(dto.getProduct());
         entity.setPrice(dto.getPrice());
-
     }
 
 }

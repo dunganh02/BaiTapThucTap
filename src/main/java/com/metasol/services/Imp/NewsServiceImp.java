@@ -14,7 +14,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -45,7 +47,6 @@ public class NewsServiceImp implements INewService {
                     // Lưu thông tin đường dẫn của ảnh vào entity
                     entity.setImage(imagePath);  // Gán đường dẫn vào một danh sách ảnh trong entity (tùy thuộc vào thiết kế của bạn)
                 } catch (IOException e) {
-                    // Xử lý nếu có lỗi khi lưu file
                     e.printStackTrace();
                 }
             }
@@ -54,6 +55,28 @@ public class NewsServiceImp implements INewService {
         newRepo.save(entity);
         // Chuyển đổi entity thành DTO để trả về cho client
         return newsResponseMapper.entityToResponse(entity);
+    }
+
+    @Override
+    public NewResponseDto createNews2(NewsRequestDto requestDto, MultipartFile[] files) {
+        if (files != null && files.length > 0) {
+            for (MultipartFile file : files) {
+                String filename = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
+                try {
+                    try (InputStream inputStream = file.getInputStream()) {
+                        Path rootLocation = Paths.get(Math.random() + File.separator + "image" + File.separator);
+                        Files.createDirectories(rootLocation);
+                        Files.copy(inputStream, rootLocation.resolve(filename), StandardCopyOption.REPLACE_EXISTING);
+                        String url = File.separator + "image" + File.separator + filename;
+                        // Thực hiện thêm xử lý nếu cần
+                    }
+                } catch (IOException e) {
+                    throw new RuntimeException("Failed to store file " + filename, e);
+                }
+            }
+        }
+
+        return null;
     }
 
     @Override
@@ -81,15 +104,21 @@ public class NewsServiceImp implements INewService {
 
     @Override
     public void deleteNews(Long id) {
-                newRepo.deleteById(id);
+        newRepo.deleteById(id);
     }
 
     private void value(NewsEntity entity, NewsRequestDto requestDto) {
         entity.setTitle(requestDto.getTitle());
         entity.setContent(requestDto.getContent());
-//        entity.setImage(requestDto.getImage());
     }
 
+    /**
+     * @param file
+     * @return : tên file
+     * @throws IOException: Dùng để lưu ảnh vào folder
+     *                      - Set lại tên file
+     *                      - Tạo thư mục lưu trữ
+     */
     private String storeFile(MultipartFile file) throws IOException {
         if (!isImageFile(file) || file.getOriginalFilename() == null) {
             throw new IOException("Không đúng định dạng");
@@ -97,18 +126,23 @@ public class NewsServiceImp implements INewService {
         String fileName = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
         // thêm UUID vào trực tiếp tên file để đảm bảo tên file là duy nhaats
         String uniqueFilename = UUID.randomUUID().toString() + "_" + fileName;
-        // Đường dẫn đến thư mục m bạn muốn lưu
+
+        // Đường dẫn đến thư mục bạn muốn lưu
         Path uploatDir = Paths.get("uploads");
+
         // kiểm tra và tạo thư mục nếu nó không tồn tại
         if (!Files.exists(uploatDir)) {
             Files.createDirectories(uploatDir);
         }
+
         // đường dẫn đầy đủ đến file
         Path destination = Paths.get(uploatDir.toString(), uniqueFilename);
         // sao chép file vào thư mục -- StandardCopyOption.REPLACE_EXISTING: nếu có th thay thé
         Files.copy(file.getInputStream(), destination, StandardCopyOption.REPLACE_EXISTING);
         return uniqueFilename;
     }
+
+    // kiểm ra có phải là file ảnh không
     private boolean isImageFile(MultipartFile file) {
         String contentType = file.getContentType();
         return contentType != null && contentType.startsWith("image/");

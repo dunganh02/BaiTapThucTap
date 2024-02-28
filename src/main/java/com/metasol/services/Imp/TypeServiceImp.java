@@ -5,7 +5,6 @@ import com.metasol.constant.MessageCode;
 import com.metasol.dto.request.TypeRequestDto;
 import com.metasol.dto.response.TypeResponseDto;
 import com.metasol.entity.TypeEntity;
-import com.metasol.error.ErrorStatus;
 import com.metasol.exception.EOException;
 import com.metasol.repositories.ITypeRepository;
 import com.metasol.services.ITypeService;

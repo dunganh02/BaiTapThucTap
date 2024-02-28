@@ -1,6 +1,6 @@
 package com.metasol.dto.request;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.metasol.entity.ProductEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,8 +10,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class TypeRequestDto {
-
-    @JsonProperty("type_name")
-    private String typeName;
+public class ProductsOfOrder {
+    private ProductEntity productId;
+    private int numberOfProduct;
 }

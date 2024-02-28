@@ -1,6 +1,5 @@
 package com.metasol.dto.request;
 
-import jakarta.persistence.Column;
 import lombok.*;
 
 @Getter

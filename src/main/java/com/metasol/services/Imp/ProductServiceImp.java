@@ -70,7 +70,13 @@ public class ProductServiceImp implements IProductService {
         entity.setCategory(dto.getCategory());
     }
 
+    /**
+     *
+     * @param entity : ProductEntity
+     * @return : dto Product
+     */
     private ProductResponseDto convertToResponseDto(ProductEntity entity) {
+
         ProductResponseDto dto = new ProductResponseDto();
         dto.setName(entity.getName());
         dto.setDescription(entity.getDescription());

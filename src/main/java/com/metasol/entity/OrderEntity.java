@@ -2,8 +2,10 @@ package com.metasol.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.w3c.dom.stylesheets.LinkStyle;
 
 import java.security.PrivateKey;
+import java.util.List;
 
 @Entity
 @Table(name = "orders")
@@ -18,14 +20,17 @@ public class OrderEntity {
     private Long id;
 
     @Column(name = "quantity_sold")
-    private Long quantitySold;
+    private int quantitySold;
 
     @Column(name = "total_money")
-    private float totalMoney;
+    private double totalMoney;
 
     @ManyToOne
     @JoinColumn(name = "customer_id")
     private CustomerEntity customer;
+
+    @OneToMany(mappedBy = "order", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<OrderDetailEntity>  orderDetails;
 
 
 }
