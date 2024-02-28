@@ -10,6 +10,7 @@ import com.metasol.exception.EOException;
 import com.metasol.repositories.ICustomerRepository;
 import com.metasol.repositories.IPriceRepository;
 import com.metasol.repositories.IProductRepository;
+import com.metasol.validation.ValidationProduct;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +29,7 @@ public class SetValueConverter {
     private final IPriceRepository priceRepos;
     private final ICustomerRepository customerRepos;
     private final IProductRepository productRepos;
+    private final ValidationProduct validationProduct;
 
     /**
      * @param orderRequestDto: chứa order{listSP}
@@ -48,19 +50,25 @@ public class SetValueConverter {
         List<OrderDetailEntity> orderDetailList = new ArrayList<>();
         Long customer_id = orderRequestDto.getCustomer().getId();
 
+        boolean check = false;
         // set từ dto->entity
         for (OrderDetailRequestDto orderDetailDto : orderDetailRequestDtoList) {
 
             OrderDetailEntity orderDetail = new OrderDetailEntity();  // Tạo đối tượng mới cho mỗi vòng lặp
-            setOrderDetailDtoValue(orderDetail, orderDetailDto, order, customer_id);
+            check = setOrderDetailDtoValue(orderDetail, orderDetailDto, order, customer_id);
+            if (!check)
+                continue;
             totalMoney += orderDetail.getPrice() * orderDetailDto.getNumberOfProduct();// so tien cua 1 product
             quantity += orderDetailDto.getNumberOfProduct();
 
             orderDetailList.add(orderDetail);
         }
-        order.setOrderDetails(orderDetailList);
-        order.setTotalMoney(totalMoney);
-        order.setQuantitySold(quantity);
+        if (check) {
+            order.setOrderDetails(orderDetailList);
+            order.setTotalMoney(totalMoney);
+            order.setQuantitySold(quantity);
+        }
+
 
     }
 
@@ -71,15 +79,15 @@ public class SetValueConverter {
      * @param customerId     : id customer
      *                       Set giá trị vào OrderDetailEntity khi nhận được OrderDetailRequestDto
      */
-    public void setOrderDetailDtoValue(OrderDetailEntity orderDetail,
-                                        OrderDetailRequestDto orderDetailDto,
-                                        OrderEntity order,
-                                        Long customerId) {
+    public boolean setOrderDetailDtoValue(OrderDetailEntity orderDetail,
+                                          OrderDetailRequestDto orderDetailDto,
+                                          OrderEntity order,
+                                          Long customerId) {
 
         try {
-            if (productRepos.existsById(orderDetailDto.getProducts().getId())) {
-
-                Long product_id = orderDetailDto.getProducts().getId();
+            Long product_id = orderDetailDto.getProducts().getId();
+//            validationProduct.checkId(product_id);
+            if (validationProduct.checkId(product_id)) {
                 Long type_id = customerRepos.findTypeByOrderIdAndCustomerId(customerId);
                 Double price = priceRepos.findPriceByProductIdAndTypeId(product_id, type_id);
 
@@ -87,7 +95,9 @@ public class SetValueConverter {
                 orderDetail.setProduct(orderDetailDto.getProducts());
                 orderDetail.setNumberOfProduct(orderDetailDto.getNumberOfProduct());
                 orderDetail.setPrice(price);
+                return true;
             }
+            return false;
         } catch (Exception e) {
             throw new EOException(ErrorCode.ENTITY_NOT_FOUND, MessageCode.ENTITY_NOT_FOUND);
         }

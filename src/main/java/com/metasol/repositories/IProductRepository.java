@@ -10,4 +10,5 @@ public interface IProductRepository extends JpaRepository<ProductEntity, Long> {
 
     @Query("select (count(p) > 0) from ProductEntity p where p.id = :id")
     boolean existsById(Long id);
+
 }

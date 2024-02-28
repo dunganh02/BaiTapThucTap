@@ -12,6 +12,7 @@ import java.util.Optional;
 public interface ICustomerRepository extends JpaRepository<CustomerEntity, Long> {
     boolean existsByPhoneNumber(String phoneNumber);
 
+    boolean existsById(Long id);
     @Query("select customer.type.id " +
             "FROM CustomerEntity customer " +
             "WHERE  customer.id = :order_customer")

@@ -9,6 +9,7 @@ import com.metasol.exception.EOException;
 import com.metasol.repositories.ICustomerRepository;
 import com.metasol.services.ICustomerService;
 import com.metasol.services.mapper.CustomerResponseMapper;
+import com.metasol.validation.ValidationCustomer;
 import lombok.AllArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
@@ -25,9 +26,11 @@ public class CustomerServiceImp implements ICustomerService {
     private final ICustomerRepository customerRepo;
     private final CustomerResponseMapper customerResponseMapper;
 
+    private final ValidationCustomer validationCustomer;
+
     @Override
     public CustomerResponseDto getById(Long id) {
-
+        validationCustomer.checkId(id);
         CustomerEntity customerEntity = customerRepo.findById(id)
                 .orElseThrow(() -> new EOException(ErrorCode.ENTITY_NOT_FOUND, MessageCode.ENTITY_NOT_FOUND));
         return customerResponseMapper.entityToResponse(customerEntity);
@@ -36,9 +39,10 @@ public class CustomerServiceImp implements ICustomerService {
     @Override
     public CustomerResponseDto create(CustomerRequestDto requestDto) {
         String phoneNumber = requestDto.getPhoneNumber();
-        if (customerRepo.existsByPhoneNumber(phoneNumber)) {
-            throw new DataIntegrityViolationException("PHone number already exists");
-        }
+//        if (customerRepo.existsByPhoneNumber(phoneNumber)) {
+//            throw new DataIntegrityViolationException("PHone number already exists");
+//        }
+        validationCustomer.checkPhoneNumber(null,phoneNumber);
 
         CustomerEntity entity = new CustomerEntity();
         this.value(entity, requestDto);
@@ -57,6 +61,7 @@ public class CustomerServiceImp implements ICustomerService {
 
     @Override
     public void delete(Long id) {
+        validationCustomer.checkId(id);
         CustomerEntity entity = customerRepo.findById(id)
                 .orElseThrow(() -> new EOException(ErrorCode.ENTITY_NOT_FOUND, MessageCode.ENTITY_NOT_FOUND));
         entity.setActive(false);
