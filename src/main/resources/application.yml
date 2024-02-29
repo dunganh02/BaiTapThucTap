@@ -21,3 +21,8 @@ spring:
 api:
   prefix: /api/v1
 
+logging:
+  level:
+    org:
+      springframework.security: DEBUG
+
