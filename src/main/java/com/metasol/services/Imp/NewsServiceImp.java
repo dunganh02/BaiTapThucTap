@@ -9,6 +9,7 @@ import com.metasol.exception.EOException;
 import com.metasol.repositories.INewsEntityRepository;
 import com.metasol.services.INewService;
 import com.metasol.services.mapper.NewsResponseMapper;
+import com.metasol.utils.FileImage;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -31,6 +32,7 @@ import java.util.UUID;
 public class NewsServiceImp implements INewService {
     private final INewsEntityRepository newRepo;
     private final NewsResponseMapper newsResponseMapper;
+    private FileImage uploadFile;
 
     @Override
     public NewResponseDto createNews(NewsRequestDto requestDto, MultipartFile[] files) {
@@ -42,7 +44,7 @@ public class NewsServiceImp implements INewService {
             if (file != null && !file.isEmpty()) {
                 try {
                     // Lưu file ảnh và nhận đường dẫn đã được lưu
-                    String imagePath = storeFile(file);
+                    String imagePath = uploadFile.storeFile2(file);
 
                     // Lưu thông tin đường dẫn của ảnh vào entity
                     entity.setImage(imagePath);  // Gán đường dẫn vào một danh sách ảnh trong entity (tùy thuộc vào thiết kế của bạn)
@@ -126,15 +128,12 @@ public class NewsServiceImp implements INewService {
         String fileName = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
         // thêm UUID vào trực tiếp tên file để đảm bảo tên file là duy nhaats
         String uniqueFilename = UUID.randomUUID().toString() + "_" + fileName;
-
         // Đường dẫn đến thư mục bạn muốn lưu
         Path uploatDir = Paths.get("uploads");
-
         // kiểm tra và tạo thư mục nếu nó không tồn tại
         if (!Files.exists(uploatDir)) {
             Files.createDirectories(uploatDir);
         }
-
         // đường dẫn đầy đủ đến file
         Path destination = Paths.get(uploatDir.toString(), uniqueFilename);
         // sao chép file vào thư mục -- StandardCopyOption.REPLACE_EXISTING: nếu có th thay thé
