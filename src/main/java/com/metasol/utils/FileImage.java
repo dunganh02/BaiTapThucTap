@@ -1,5 +1,10 @@
 package com.metasol.utils;
 
+import com.metasol.constant.ErrorCode;
+import com.metasol.constant.MessageCode;
+import com.metasol.exception.EOException;
+import org.springframework.core.io.UrlResource;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -11,10 +16,11 @@ import java.nio.file.StandardCopyOption;
 import java.util.Objects;
 import java.util.UUID;
 
-public class UploadFile {
+@Component
+public class FileImage {
 
-    private String storeFile(MultipartFile file) throws IOException {
-        if (!isImageFile(file) || file.getOriginalFilename() == null) {
+    public String storeFile2(MultipartFile file) throws IOException {
+        if (!isImageFile2(file) || file.getOriginalFilename() == null) {
             throw new IOException("Không đúng định dạng");
         }
         String fileName = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
@@ -32,9 +38,28 @@ public class UploadFile {
         Files.copy(file.getInputStream(), destination, StandardCopyOption.REPLACE_EXISTING);
         return uniqueFilename;
     }
-    private boolean isImageFile(MultipartFile file) {
+
+    public boolean isImageFile2(MultipartFile file) {
         String contentType = file.getContentType();
         return contentType != null && contentType.startsWith("image/");
+    }
+
+
+    public UrlResource viewImage(String imageName) {
+        try {
+            java.nio.file.Path imagePath = Paths.get("uploads/" + imageName);
+            UrlResource resource = new UrlResource(imagePath.toUri());
+
+            if (resource.exists()) {
+                return resource;
+            } else {
+                return new UrlResource(Paths.get("uploads/notfound.jpg").toUri());
+
+                //return ResponseEntity.notFound().build();
+            }
+        } catch (Exception e) {
+            throw new EOException(ErrorCode.NO_SOURCE_IMAGE, MessageCode.NOT_NULL);
+        }
     }
 
 }

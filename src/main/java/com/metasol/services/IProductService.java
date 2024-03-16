@@ -1,14 +1,24 @@
 package com.metasol.services;
 
+import com.metasol.dto.request.ProductImageRequestDto;
 import com.metasol.dto.request.ProductRequestDto;
+import com.metasol.dto.response.ProductImageResponseDto;
 import com.metasol.dto.response.ProductResponseDto;
+import com.metasol.entity.ProductEntity;
+import com.metasol.entity.ProductImage;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
+import java.util.Optional;
 
 public interface IProductService {
     ProductResponseDto createProduct(ProductRequestDto requestDto);
 
-    ProductResponseDto getProductById(long id) throws Exception;
+    ProductResponseDto findProductById(long id) throws Exception;
+    ProductEntity getProductById(long id) throws Exception;
+
 
     Page<ProductResponseDto> getAllProduct(PageRequest pageRequest);
 
@@ -18,6 +28,6 @@ public interface IProductService {
 
     boolean existsByName(String name);
 
-//    ProductImage createProductIng(Long productId,ProductImageDTO productImageDTO) throws Exception;
+    List<ProductImage> createProductImg(Long productId, List<MultipartFile> files) throws Exception;
 
 }

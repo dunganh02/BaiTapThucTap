@@ -3,6 +3,8 @@ package com.metasol.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Entity
 @Table(name = "products")
 @Data
@@ -11,6 +13,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProductEntity extends BaseEntity{
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -27,5 +30,6 @@ public class ProductEntity extends BaseEntity{
     @ManyToOne
     private CategoryEntity category;
 
-
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<ProductImage> productImages;
 }
